@@ -13,39 +13,6 @@ class uwuipy:
         (r"pog", "poggies"),
     ]
 
-    __actions = [
-        "***blushes***",
-        "***whispers to self***",
-        "***cries***",
-        "***screams***",
-        "***sweats***",
-        "***runs away***",
-        "***screeches***",
-        "***walks away***",
-        "***looks at you***",
-        "***huggles tightly***",
-        "***boops your nose***",
-        "***wags my tail***",
-        "***pounces on you***",
-        "***nuzzles your necky wecky***",
-        "***licks lips***",
-        "***glomps and huggles***",
-        "***glomps***",
-        "***looks around suspiciously***",
-        "***smirks smuggly***",
-        "***breaks into your house and aliases neofetch to rm -rf --no-preserve-root /***",
-    ]
-
-    # Because I got annoyed at them not being toggleable.
-    __nsfw_actions = [
-        "***twerks***",  # arguably nsfw
-        "***sees bulge***",
-        "***notices buldge***",
-        "***starts twerking***",  # also arguable.
-        "***unzips your pants***",
-        "***pounces on your buldge***",
-    ]
-
     __exclamations = [
         "!?",
         "?!!",
@@ -53,6 +20,8 @@ class uwuipy:
         "!!11",
         "!!1!",
         "?!?!",
+        "#",
+        "@",
     ]
 
     __faces = [
@@ -112,11 +81,9 @@ class uwuipy:
     def __init__(
         self,
         seed: int | None = None,
-        stutter_chance: float = 0.1,
-        face_chance: float = 0.05,
-        action_chance: float = 0.075,
+        stutter_chance: float = 1,
+        face_chance: float = 1,
         exclamation_chance: float = 1,
-        nsfw_actions: bool = False,
     ):
         # input protection to make sure the user stays within allowed parameters
         if not 0.0 <= stutter_chance <= 1.0:
@@ -127,10 +94,6 @@ class uwuipy:
             raise ValueError(
                 "Invalid input value for faceChance, supported range is 0-1.0"
             )
-        if not 0.0 <= action_chance <= 1.0:
-            raise ValueError(
-                "Invalid input value for actionChance, supported range is 0-1.0"
-            )
         if not 0.0 <= exclamation_chance <= 1.0:
             raise ValueError(
                 "Invalid input value for exclamationChance, supported range is 0-1.0"
@@ -139,9 +102,7 @@ class uwuipy:
         random.seed(seed)
         self._stutter_chance = stutter_chance
         self._face_chance = face_chance
-        self._action_chance = action_chance
         self._exclamation_chance = exclamation_chance
-        self._nsfw_actions = nsfw_actions
 
     def _uwuify_words(self, _msg):
         # split the message into words
@@ -158,7 +119,7 @@ class uwuipy:
             if re.search(r"((http:|https:)//[^ \<]*[^ \<\.])", word):
                 continue
             # skip pings
-            if word[0] == "@" or word[0] == "#" or word[0] == ":" or word[0] == "<":
+            if word[0] == ":" or word[0] == "<":
                 continue
             # for each pattern in the array
             for pattern, substitution in self.__uwu_pattern:
@@ -177,19 +138,11 @@ class uwuipy:
 
         # iterate over each individual word
         for idx, word in enumerate(words):
-            # skip empty entries
-            if not word:
-                continue
-            # skip pings
-            if word[0] == "@" or word[0] == "#" or word[0] == ":" or word[0] == "<":
-                continue
-
-            # get the character case for the second letter in the word
-            next_char_case = word[1].isupper() if len(word) > 1 else False
-            _word = ""
+           next_char_case = word[1].isupper() if len(word) > 1 else False
+        _word = ""
 
             # if we are to add stutters, do it
-            if random.random() <= self._stutter_chance:
+        if random.random() <= self._stutter_chance:
                 # creates a random number between 1 and 2
                 stutter_len = random.randrange(1, 3)
                 # add as many characters to the stutter as stutter_len dictates
@@ -206,23 +159,11 @@ class uwuipy:
                 ) + word[1:]
 
             # if we are to add a face, do it
-            if random.random() <= self._face_chance:
+        if random.random() <= self._face_chance:
                 _word = (_word or word) + " " + random.choice(self.__faces)
 
-            # if we are to add an action, do it
-            if random.random() <= self._action_chance:
-                _word = (
-                    (_word or word)
-                    + " "
-                    + random.choice(
-                        self.__actions
-                        if not self._nsfw_actions
-                        else self.__actions + self.__nsfw_actions
-                    )
-                )
-
             # replace the word in the array with the modified if it exists, if not add the original word back
-            words[idx] = _word or word
+        words[idx] = _word or word
 
         return " ".join(words)
 
