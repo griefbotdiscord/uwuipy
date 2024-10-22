@@ -133,19 +133,24 @@ class uwuipy:
         return " ".join(words)
 
     def _uwuify_spaces(self, _msg):
-        # split the message into words
+    # Split the message into words
         words = _msg.split(" ")
 
-        # iterate over each individual word
+        # Iterate over each individual word
         for idx, word in enumerate(words):
-           next_char_case = word[1].isupper() if len(word) > 1 else False
-        _word = ""
+            # Skip empty entries
+            if not word:
+                continue
 
-            # if we are to add stutters, do it
-        if random.random() <= self._stutter_chance:
-                # creates a random number between 1 and 2
+            # Check the length of the word
+            next_char_case = word[1].isupper() if len(word) > 1 else False
+            _word = ""
+
+            # If we are to add stutters, do it
+            if random.random() <= self._stutter_chance:
+                # Creates a random number between 1 and 2
                 stutter_len = random.randrange(1, 3)
-                # add as many characters to the stutter as stutter_len dictates
+                # Add as many characters to the stutter as stutter_len dictates
                 for j in range(stutter_len + 1):
                     _word += (
                         word[0]
@@ -153,17 +158,16 @@ class uwuipy:
                         else (word[0].upper() if next_char_case else word[0].lower())
                     ) + "-"
 
-                # add in the whole word, but make sure the case matches the next rest of the word
-                _word += (
-                    word[0].upper() if next_char_case else word[0].lower()
-                ) + word[1:]
+                # Add in the whole word, ensuring the case matches the rest of the word
+                _word += word[0].upper() if next_char_case else word[0].lower()
+                _word += word[1:]  # Append the rest of the word
 
-            # if we are to add a face, do it
-        if random.random() <= self._face_chance:
+            # If we are to add a face, do it
+            if random.random() <= self._face_chance:
                 _word = (_word or word) + " " + random.choice(self.__faces)
 
-            # replace the word in the array with the modified if it exists, if not add the original word back
-        words[idx] = _word or word
+            # Replace the word in the array with the modified if it exists; if not, add the original word back
+            words[idx] = _word or word
 
         return " ".join(words)
 
